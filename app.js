@@ -5,7 +5,7 @@
    labels, and the prototypes themselves. No collection-specific ids or
    labels are hardcoded below.
 
-   State: { prototype, viewport, page, theme, zoom }
+   State: { prototype, viewport, page, theme, zoom, ui }
    - theme is a *preference*: when a capture lacks the preferred theme the
      first available theme is shown while the preference is kept.
    - Restored from query params, then localStorage, then catalog defaults. */
@@ -20,6 +20,10 @@
   var THEMES = LIBRARY.themes || [];
   var ZOOMS = ["fit", "full"];
   var ZOOM_LABELS = { fit: "Fit", full: "100%" };
+  var UI_MODES = [
+    { id: "dim", label: "Dim" },
+    { id: "bright", label: "Bright" }
+  ];
   var DEFAULTS = LIBRARY.defaults || {};
   var LS_KEY = LIBRARY.storageKey || "prototype-library-viewer";
 
@@ -96,6 +100,7 @@
     if (definitionById(PAGES, raw.page)) s.page = raw.page;
     if (definitionById(THEMES, raw.theme)) s.theme = raw.theme;
     if (ZOOMS.indexOf(raw.zoom) !== -1) s.zoom = raw.zoom;
+    if (definitionById(UI_MODES, raw.ui)) s.ui = raw.ui;
     return s;
   }
 
@@ -105,7 +110,8 @@
       viewport: DEFAULTS.viewport || (VIEWPORTS[0] && VIEWPORTS[0].id),
       page: DEFAULTS.page || (PAGES[0] && PAGES[0].id),
       theme: DEFAULTS.theme || (THEMES[0] && THEMES[0].id),
-      zoom: DEFAULTS.zoom || ZOOMS[0]
+      zoom: DEFAULTS.zoom || ZOOMS[0],
+      ui: DEFAULTS.ui || "dim"
     };
   }
 
@@ -122,7 +128,8 @@
         viewport: q.get("viewport"),
         page: q.get("page"),
         theme: q.get("theme"),
-        zoom: q.get("zoom")
+        zoom: q.get("zoom"),
+        ui: q.get("ui")
       });
       if (fromUrl) for (var k2 in fromUrl) s[k2] = fromUrl[k2];
     } catch (e) { /* ignore */ }
@@ -140,6 +147,7 @@
       q.set("page", state.page);
       q.set("theme", state.theme);
       q.set("zoom", state.zoom);
+      q.set("ui", state.ui);
       var url = window.location.pathname + "?" + q.toString();
       history.replaceState(null, "", url);
     } catch (e) { /* file:// or older browser — skip */ }
@@ -234,6 +242,11 @@
       b.setAttribute("aria-pressed",
         String(b.getAttribute("data-zoom") === state.zoom));
     });
+    document.querySelectorAll("#uiSeg button").forEach(function (b) {
+      b.setAttribute("aria-pressed",
+        String(b.getAttribute("data-ui") === state.ui));
+    });
+    document.body.classList.toggle("viewer-dim", state.ui === "dim");
 
     /* select */
     protoSelect.value = state.prototype;
@@ -382,6 +395,12 @@
     render();
   }
 
+  function setUi(ui) {
+    if (!definitionById(UI_MODES, ui)) return;
+    state.ui = ui;
+    render();
+  }
+
   /* ---------- segmented control construction ---------- */
 
   function buildSeg(containerId, defs, attr, labelFn) {
@@ -415,6 +434,7 @@
   onSeg("pageSeg", "page", setPage);
   onSeg("themeSeg", "theme", setTheme);
   onSeg("zoomSeg", "zoom", setZoom);
+  onSeg("uiSeg", "ui", setUi);
 
   document.addEventListener("keydown", function (e) {
     var t = e.target;
@@ -439,6 +459,8 @@
         break;
       case "z": case "Z":
         setZoom(state.zoom === "fit" ? "full" : "fit"); break;
+      case "c": case "C":
+        setUi(state.ui === "dim" ? "bright" : "dim"); break;
       case "o": case "O":
         window.open(openOriginal.href, "_blank", "noopener"); break;
     }
@@ -458,6 +480,7 @@
     buildSeg("zoomSeg", ZOOMS.map(function (z) {
       return { id: z, label: ZOOM_LABELS[z] || z };
     }), "zoom");
+    buildSeg("uiSeg", UI_MODES, "ui");
 
     CATALOG.forEach(function (p) {
       var opt = document.createElement("option");

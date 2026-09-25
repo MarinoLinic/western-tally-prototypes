@@ -19,7 +19,11 @@ captures of the 15 Western Tally prototype directions (ports 5000–5014).
   enabled only when the selected prototype actually has captures for it.
 - Fit vs. 100% zoom; a light sunken canvas with a subtle checker; one
   `<img>` element only.
-- Deep-linkable state (`?prototype=&viewport=&page=&theme=&zoom=`) plus
+- Cinema mode (`Dim`, the default): dims and desaturates the viewer chrome
+  and darkens the workspace while the screenshot itself is never touched;
+  hovering or keyboard-focusing a chrome section restores it. `Bright`
+  returns the full XP light UI.
+- Deep-linkable state (`?prototype=&viewport=&page=&theme=&zoom=&ui=`) plus
   `localStorage` restore; `Open original` always points at the displayed
   capture.
 - Accessible: labelled controls, `aria-pressed` segmented buttons, disabled
@@ -75,11 +79,13 @@ gracefully.
 | Page segmented control           | switch page (unavailable pages disabled)     |
 | Theme segmented control          | set preferred theme                          |
 | Zoom: Fit · 100%                 | fit-to-width vs. natural size                |
+| UI: Dim · Bright                 | cinema mode vs. full XP chrome               |
 | `Open original`                  | open the displayed PNG in a new tab          |
 | `↑` / `↓`                        | previous / next prototype                    |
 | `←` / `→`                        | previous / next available page               |
 | `T`                              | cycle preferred theme                        |
 | `Z`                              | toggle Fit / 100%                            |
+| `C`                              | toggle cinema mode (Dim / Bright)            |
 | `O`                              | open original                                |
 
 ## Adapting this library
@@ -93,7 +99,7 @@ window.PROTOTYPE_LIBRARY = {
   storageKey: "prototype-library-viewer",// localStorage key
   defaults: {                            // initial state
     prototype: "p00", viewport: "desktop",
-    page: "home", theme: "light", zoom: "fit"
+    page: "home", theme: "light", zoom: "fit", ui: "dim"
   },
   viewports: [ { id: "desktop", label: "Desktop" },
                { id: "mobile", label: "Mobile" } ],
@@ -311,11 +317,12 @@ For a future desktop or mobile batch:
 ## Implementation notes
 
 - **State & persistence:** state is `{ prototype, viewport, page, theme,
-  zoom }`. Query params (`?prototype=&viewport=&page=&theme=&zoom=`) win,
+  zoom, ui }`. Query params
+  (`?prototype=&viewport=&page=&theme=&zoom=&ui=`) win,
   then `localStorage`, then catalog defaults. Every change writes back via
   `history.replaceState` and `localStorage`, both wrapped in try/catch for
   `file://` and locked-down browsers. Zoom values are `fit` and `full`
-  (`full` = the `100%` button).
+  (`full` = the `100%` button); `ui` values are `dim` and `bright`.
 - **Theme preference:** `state.theme` is the user's preference, not the
   displayed variant. The resolver falls back to the first configured theme
   present on the capture, shows "<Theme> unavailable — showing the <theme>
@@ -332,6 +339,12 @@ For a future desktop or mobile batch:
   `width: min(100%, 1440px); height: auto`, 100% uses natural width inside a
   horizontally scrolling canvas. The image is never cropped; a thin border
   and neutral shadow keep its boundary distinct from the viewer.
+- **Cinema mode:** `ui: "dim"` adds `body.viewer-dim`, which darkens the
+  page/canvas and applies `opacity`/`filter` only to `.topbar`,
+  `.meta-strip`, `.notice`, and `.foot`. Each dimmed section returns to full
+  opacity under `:hover`/`:focus-within`. No dim rule ever targets `#shot`,
+  so the screenshot is always shown at full fidelity; `bright` restores the
+  XP light UI exactly.
 - **Accessibility/responsiveness:** segmented controls use `aria-pressed`,
   unavailable options are truly `disabled`, the fallback notice and a hidden
   status line are `aria-live="polite"`, focus is a dotted outline, and
@@ -360,6 +373,7 @@ Then in the browser at `http://127.0.0.1:4173/`:
 - [ ] p07 Full map dark renders; other prototypes disable the Full map button
 - [ ] With dark preferred, p08 shows light + "Dark unavailable" notice; p09 resumes dark
 - [ ] 100% zoom shows natural width with horizontal scroll; Fit restores
-- [ ] `↑`/`↓`/`←`/`→`, `T`, `Z`, `O` shortcuts work outside form fields
+- [ ] `↑`/`↓`/`←`/`→`, `T`, `Z`, `C`, `O` shortcuts work outside form fields
+- [ ] Default UI mode is Dim; hovering/focusing chrome restores it; `C` and the UI control switch to Bright
 - [ ] ~390 px viewport: header controls wrap, viewer stays usable
 - [ ] No console errors; second visit restores the last selection

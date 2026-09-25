@@ -11,7 +11,8 @@ window.PROTOTYPE_LIBRARY = {
     viewport: "desktop",
     page: "home",
     theme: "light",
-    zoom: "fit"
+    zoom: "fit",
+    ui: "dim"
   },
   viewports: [
     { id: "desktop", label: "Desktop" },
