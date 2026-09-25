@@ -45,9 +45,7 @@ body {
 /* ---------- header: XP application window frame ---------- */
 
 .topbar {
-  position: sticky;
-  top: 4px;
-  z-index: 50;
+  position: static;
   background: var(--xp-surface);
   border: 2px solid var(--xp-blue-dark);
   border-radius: 3px;
