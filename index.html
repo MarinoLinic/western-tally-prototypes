@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Western Tally — Prototype Library</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-row">
+    <span class="brand">Western Tally</span>
+    <h1 class="title">Prototype Library</h1>
+  </div>
+
+  <div class="controls" role="toolbar" aria-label="Viewer controls">
+    <div class="ctl-group proto-nav">
+      <button id="prevProto" class="btn" type="button" aria-label="Previous prototype">&lsaquo; Prev</button>
+      <select id="protoSelect" aria-label="Prototype"></select>
+      <button id="nextProto" class="btn" type="button" aria-label="Next prototype">Next &rsaquo;</button>
+    </div>
+
+    <div class="ctl-group">
+      <span class="ctl-label" id="pageLabel">Page</span>
+      <div class="segmented" id="pageSeg" role="group" aria-labelledby="pageLabel">
+        <button type="button" data-page="home" aria-pressed="false">Home</button>
+        <button type="button" data-page="map" aria-pressed="false">Map</button>
+        <button type="button" data-page="entry" aria-pressed="false">Entry</button>
+        <button type="button" data-page="map-full" aria-pressed="false">Full map</button>
+      </div>
+    </div>
+
+    <div class="ctl-group">
+      <span class="ctl-label" id="themeLabel">Theme</span>
+      <div class="segmented" id="themeSeg" role="group" aria-labelledby="themeLabel">
+        <button type="button" data-theme="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+
+    <div class="ctl-group">
+      <span class="ctl-label" id="viewportLabel">Viewport</span>
+      <div class="segmented" id="viewportSeg" role="group" aria-labelledby="viewportLabel">
+        <button type="button" data-viewport="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" data-viewport="mobile" aria-pressed="false" disabled
+                title="Mobile captures are not in the archive yet">Mobile</button>
+      </div>
+      <span class="hint">awaiting captures</span>
+    </div>
+
+    <div class="ctl-group">
+      <span class="ctl-label" id="zoomLabel">Zoom</span>
+      <div class="segmented" id="zoomSeg" role="group" aria-labelledby="zoomLabel">
+        <button type="button" data-zoom="fit" aria-pressed="false">Fit</button>
+        <button type="button" data-zoom="full" aria-pressed="false">100%</button>
+      </div>
+    </div>
+
+    <a id="openOriginal" class="open-original" href="#" target="_blank" rel="noopener">Open original &#8599;</a>
+  </div>
+</header>
+
+<main>
+  <section class="meta-strip" aria-label="Current capture details">
+    <span id="metaNum" class="meta-num">00 / 14</span>
+    <span id="metaLabel" class="meta-label"></span>
+    <span id="metaDir" class="meta-dir"></span>
+    <span id="metaSrc" class="meta-src"></span>
+    <span id="metaSpec" class="meta-spec">Desktop &middot; &mdash; &middot; &mdash; &middot; &mdash; &times; &mdash;</span>
+  </section>
+
+  <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+  <p id="srStatus" class="visually-hidden" aria-live="polite"></p>
+
+  <section class="canvas" id="canvas" aria-label="Screenshot canvas">
+    <div class="canvas-inner">
+      <span id="stateMsg" class="state-msg" hidden></span>
+      <img id="shot" decoding="async" alt="">
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span class="foot-title">Shortcuts</span>
+  <span><kbd>&uarr;</kbd>/<kbd>&darr;</kbd> previous / next prototype</span>
+  <span><kbd>&larr;</kbd>/<kbd>&rarr;</kbd> previous / next page</span>
+  <span><kbd>T</kbd> theme</span>
+  <span><kbd>Z</kbd> zoom</span>
+  <span><kbd>O</kbd> open original</span>
+</footer>
+
+<script src="catalog.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
