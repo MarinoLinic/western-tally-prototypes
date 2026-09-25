@@ -1,43 +1,53 @@
-# Western Tally — Prototype Library
+# Prototype Library
 
-A zero-dependency static viewer for the 89 desktop screenshots captured across
-15 Western Tally prototype directions (ports 5000–5014). It exists to make the
-archive browsable: every prototype, page, and theme is one click or keystroke
-away, with no build step and no install.
+A zero-dependency static screenshot inspector. It is **collection-agnostic**:
+every label, ordering, and file path it displays comes from `catalog.js`, so
+the same viewer can present any set of named screenshot captures without
+touching the app code. The catalog currently shipped here contains 89 desktop
+captures of the 15 Western Tally prototype directions (ports 5000–5014).
 
 ## Features
 
-- Browse 15 prototypes with previous / next buttons, a native `<select>`, or
+- Browse prototypes with previous / next buttons, a native `<select>`, or
   arrow keys.
-- Per-prototype page switching: Home, Map, Entry — plus **Full map** on p07.
-- Light / dark theme switching. Theme is a *preference*: prototypes without a
-  dark capture (p08) temporarily show light while the dark preference is kept.
-- Fit vs. 100% zoom; a checkered neutral canvas; one `<img>` element only.
-- Deep-linkable state (`?prototype=&page=&theme=&zoom=`) plus `localStorage`
-  restore; `Open original` always points at the displayed capture.
+- Page switching driven by the catalog's `pages` list — unavailable pages are
+  disabled automatically.
+- Theme switching driven by the catalog's `themes` list. Theme is a
+  *preference*: captures missing the preferred theme fall back to the first
+  available theme while the preference is kept.
+- Viewport switching driven by the catalog's `viewports` list; a viewport is
+  enabled only when the selected prototype actually has captures for it.
+- Fit vs. 100% zoom; a light sunken canvas with a subtle checker; one
+  `<img>` element only.
+- Deep-linkable state (`?prototype=&viewport=&page=&theme=&zoom=`) plus
+  `localStorage` restore; `Open original` always points at the displayed
+  capture.
 - Accessible: labelled controls, `aria-pressed` segmented buttons, disabled
   states, visible focus, `aria-live` status, `prefers-reduced-motion` support.
-- Responsive below 820 px — the viewer itself works on a phone even though
-  mobile captures are not in the archive yet.
+- Responsive below 820 px — the viewer itself works on a phone regardless of
+  which viewports exist in the catalog.
+- Deliberately Windows XP-inspired chrome (Luna-blue title bar, warm-grey
+  raised controls, Tahoma) so the tool window is unmistakably separate from
+  whatever a captured page looks like.
 
 ## Architecture
 
 ```
-western-tally-prototypes/
-├── index.html        markup: sticky header + control deck, meta strip, canvas, footer
-├── styles.css        tokens + editorial-utility styling, responsive, reduced-motion
-├── catalog.js        window.PROTOTYPE_CATALOG — readable literal, one object per prototype
+prototype-library/
+├── index.html        markup: sticky chrome header + control deck, meta strip, canvas, footer
+├── styles.css        XP-style chrome tokens + styling, responsive, reduced-motion
+├── catalog.js        window.PROTOTYPE_LIBRARY — the entire configuration
 ├── app.js            classic-script viewer logic (state, rendering, keys, prefetch)
 ├── serve.py          stdlib-only ThreadingHTTPServer on 127.0.0.1:4173
 ├── README.md         this file
-└── screenshots/      89 renamed PNG captures (image bytes unchanged)
+└── screenshots/      renamed PNG captures (image bytes unchanged)
 ```
 
-**Why dependency-free:** the entire app is ~600 lines of hand-written HTML/CSS/
-JS served as static files. There is nothing to install, compile, or bundle —
-`catalog.js` + `app.js` are classic scripts (not ES modules), so `index.html`
-works even when opened directly from disk (`file://`), and `serve.py` adds
-correct caching headers and a stable URL when a server is wanted.
+**Why dependency-free:** the entire app is hand-written HTML/CSS/JS served as
+static files. There is nothing to install, compile, or bundle — `catalog.js`
+and `app.js` are classic scripts (not ES modules), so `index.html` works even
+when opened directly from disk (`file://`), and `serve.py` adds correct
+caching headers and a stable URL when a server is wanted.
 
 ## Running it
 
@@ -57,26 +67,70 @@ gracefully.
 
 ### Controls and shortcuts
 
-| Control / key                    | Action                                  |
-| -------------------------------- | --------------------------------------- |
-| `‹ Prev` / `Next ›`              | previous / next prototype (wraps 0–14)  |
-| prototype select                 | jump to any prototype                   |
-| Page: Home · Map · Entry · Full map | switch page (unavailable pages are disabled) |
-| Theme: Light · Dark              | set preferred theme                     |
-| Viewport: Desktop · Mobile       | Mobile is disabled — awaiting captures  |
-| Zoom: Fit · 100%                 | fit-to-width vs. natural size           |
-| `Open original`                  | open the displayed PNG in a new tab     |
-| `↑` / `↓`                        | previous / next prototype               |
-| `←` / `→`                        | previous / next available page          |
-| `T`                              | toggle preferred theme                  |
-| `Z`                              | toggle Fit / 100%                       |
-| `O`                              | open original                           |
+| Control / key                    | Action                                       |
+| -------------------------------- | -------------------------------------------- |
+| `‹ Prev` / `Next ›`              | previous / next prototype (wraps around)     |
+| prototype select                 | jump to any prototype                        |
+| Viewport segmented control       | switch viewport (enabled only per-catalog)   |
+| Page segmented control           | switch page (unavailable pages disabled)     |
+| Theme segmented control          | set preferred theme                          |
+| Zoom: Fit · 100%                 | fit-to-width vs. natural size                |
+| `Open original`                  | open the displayed PNG in a new tab          |
+| `↑` / `↓`                        | previous / next prototype                    |
+| `←` / `→`                        | previous / next available page               |
+| `T`                              | cycle preferred theme                        |
+| `Z`                              | toggle Fit / 100%                            |
+| `O`                              | open original                                |
 
-## Catalog
+## Adapting this library
 
-`catalog.js` defines `window.PROTOTYPE_CATALOG`, an array in numeric order.
-Each entry: `id`, `number`, `label`, `direction`, `source`, and
-`captures.desktop` keyed by page → theme → path.
+`catalog.js` is the single source of truth. It defines
+`window.PROTOTYPE_LIBRARY` with this schema:
+
+```js
+window.PROTOTYPE_LIBRARY = {
+  title: "Prototype Library",            // document title
+  storageKey: "prototype-library-viewer",// localStorage key
+  defaults: {                            // initial state
+    prototype: "p00", viewport: "desktop",
+    page: "home", theme: "light", zoom: "fit"
+  },
+  viewports: [ { id: "desktop", label: "Desktop" },
+               { id: "mobile", label: "Mobile" } ],
+  pages:     [ { id: "home", label: "Home" },
+               { id: "map-full", label: "Full map", fallback: "map" } ],
+  themes:    [ { id: "light", label: "Light" },
+               { id: "dark", label: "Dark" } ],
+  prototypes: [
+    { id: "p00", number: 0, label: "Baseline",
+      direction: "Current site", source: "current design",
+      captures: {
+        desktop: {                       // key = viewport id
+          home: {                        // key = page id
+            light: "screenshots/…",      // key = theme id
+            dark:  "screenshots/…" } } } }
+  ]
+};
+```
+
+- **Adding a page, theme, or viewport** to the config arrays automatically
+  creates its segmented-control button and enables it wherever matching
+  captures exist — no edits to `index.html` or `app.js`.
+- A viewport button is enabled only when the selected prototype has a
+  `captures.<viewport>` block. The shipped catalog has no `mobile` captures,
+  so Mobile is disabled everywhere; adding `captures.mobile` entries turns it
+  on with zero code changes.
+- A page entry may carry `fallback: "<other page id>"`; when a prototype lacks
+  the selected page, the viewer jumps to the fallback instead (this is how
+  `map-full` degrades to `map`).
+- Theme falls back to the first configured theme present on the capture when
+  the preferred one is missing, and a notice explains the substitution.
+- The `viewport` state is deep-linkable via `?viewport=` and persists like
+  the rest of the state.
+
+## Current catalog
+
+Fifteen prototypes, p00–p14:
 
 | ID  | #  | Label                     | Direction                | Source             |
 | --- | -- | ------------------------- | ------------------------ | ------------------ |
@@ -98,7 +152,7 @@ Each entry: `id`, `number`, `label`, `direction`, `source`, and
 
 ## Capture ordering assumptions
 
-Original filenames look like
+The original Western Tally filenames looked like
 `screencapture-127-0-0-1-PORT[-path]-YYYY-MM-DD-HH_MM_SS.png`. The words in the
 optional path segment (`add`, `events`, `map`) were **not** trusted — ordering
 within each port is purely chronological by the embedded timestamp.
@@ -245,9 +299,10 @@ For a future desktop or mobile batch:
    timestamp — never by URL words — and `git mv` them into `screenshots/`.
 4. **Update `catalog.js`**: add or fill the matching page/theme paths under
    `captures.desktop` (or add a `captures.mobile` block for a mobile batch).
-5. **Only then** flip device availability: enable the Mobile segmented button
-   in `index.html`/`app.js` after the mobile captures actually exist, not
-   before.
+   New page/theme/viewport ids also need entries in the corresponding config
+   arrays.
+5. **Enablement is automatic**: viewport buttons activate as soon as captures
+   exist — do not enable a viewport before its captures are in the catalog.
 6. **Verify** every catalog path exists on disk and counts match the capture
    log (see checklist below).
 7. **Spot-check** in the browser: the first and last prototype, plus every
@@ -255,32 +310,33 @@ For a future desktop or mobile batch:
 
 ## Implementation notes
 
-- **State & persistence:** state is `{ prototype, page, theme, zoom }`.
-  Query params (`?prototype=&page=&theme=&zoom=`) win, then `localStorage`,
-  then defaults `p00 / home / light / fit`. Every change writes back via
+- **State & persistence:** state is `{ prototype, viewport, page, theme,
+  zoom }`. Query params (`?prototype=&viewport=&page=&theme=&zoom=`) win,
+  then `localStorage`, then catalog defaults. Every change writes back via
   `history.replaceState` and `localStorage`, both wrapped in try/catch for
   `file://` and locked-down browsers. Zoom values are `fit` and `full`
   (`full` = the `100%` button).
 - **Theme preference:** `state.theme` is the user's preference, not the
-  displayed variant. `resolve()` falls back to `light` when the preferred
-  variant is absent (only p08 today), shows "Dark unavailable — showing the
-  light capture", and keeps the dark preference so the next prototype resumes
-  dark automatically.
+  displayed variant. The resolver falls back to the first configured theme
+  present on the capture, shows "<Theme> unavailable — showing the <theme>
+  capture", and keeps the preference so the next prototype resumes it.
 - **Image dimensions:** the metadata strip reads `img.naturalWidth ×
   img.naturalHeight` after each `load` event — nothing is hardcoded.
-- **Prefetch & cache:** during idle time two `<link rel="prefetch" as="image">`
-  elements are pointed at the same page/theme on the previous and next
-  prototypes. `serve.py` sends `Cache-Control: public, max-age=31536000,
-  immutable` for `/screenshots/` and `no-cache` for everything else, so renamed
-  images are cached forever while code always revalidates.
+- **Prefetch & cache:** during idle time two `<link rel="prefetch"
+  as="image">` elements are pointed at the same normalized selection on the
+  previous and next prototypes. `serve.py` sends `Cache-Control: public,
+  max-age=31536000, immutable` for `/screenshots/` and `no-cache` for
+  everything else, so renamed images are cached forever while code always
+  revalidates.
 - **Rendering:** exactly one `<img decoding="async">`; Fit applies
   `width: min(100%, 1440px); height: auto`, 100% uses natural width inside a
-  horizontally scrolling canvas. The image is never cropped or framed.
+  horizontally scrolling canvas. The image is never cropped; a thin border
+  and neutral shadow keep its boundary distinct from the viewer.
 - **Accessibility/responsiveness:** segmented controls use `aria-pressed`,
   unavailable options are truly `disabled`, the fallback notice and a hidden
-  status line are `aria-live="polite"`, focus is a vermilion outline, and all
-  transitions are removed under `prefers-reduced-motion: reduce`. Under 820 px
-  the header wraps into compact rows and the canvas padding shrinks.
+  status line are `aria-live="polite"`, focus is a dotted outline, and
+  all transitions are removed under `prefers-reduced-motion: reduce`. Under
+  820 px the header wraps into compact rows and the canvas padding shrinks.
 
 ## Verification checklist
 
@@ -289,9 +345,8 @@ For a future desktop or mobile batch:
 dir /b screenshots\*.png | find /c /v ""
 dir /b *.png
 
-:: catalog integrity: every referenced path exists, grammar holds,
-:: p07 = 8 refs, p08 = 3, all others = 6, total = 89
-py -c "import re,os;src=open('catalog.js').read();ps=re.findall(r'\"(screenshots/[^\"]+)\"',src);assert all(os.path.exists(p) for p in ps);assert len(ps)==89;print('catalog ok:',len(ps),'refs')"
+:: catalog integrity: every referenced path exists, counts match
+py -c "import re,os;src=open('catalog.js',encoding='utf-8').read();ps=re.findall(r'\"(screenshots/[^\"]+)\"',src);assert all(os.path.exists(p) for p in ps);assert len(ps)==89;print('catalog ok:',len(ps),'refs')"
 
 :: server compiles and serves
 py -m py_compile serve.py
@@ -300,7 +355,8 @@ py serve.py 4173 --no-open
 
 Then in the browser at `http://127.0.0.1:4173/`:
 
-- [ ] p00 home light renders; metadata shows real `width × height`
+- [ ] Title and brand read `Prototype Library`; blue XP title bar visible
+- [ ] First prototype home light renders; metadata shows real `width × height`
 - [ ] p07 Full map dark renders; other prototypes disable the Full map button
 - [ ] With dark preferred, p08 shows light + "Dark unavailable" notice; p09 resumes dark
 - [ ] 100% zoom shows natural width with horizontal scroll; Fit restores

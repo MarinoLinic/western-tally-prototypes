@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Western Tally prototype viewer — zero-dependency dev server.
+"""Prototype Library — zero-dependency dev server.
 
 Usage:
     py serve.py [port] [--no-open]
@@ -40,7 +40,7 @@ def main(argv):
     server = ThreadingHTTPServer(("127.0.0.1", port), handler)
 
     url = "http://127.0.0.1:%d/" % port
-    print("Western Tally - Prototype Library")
+    print("Prototype Library")
     print("Serving %s" % ROOT)
     print("Open %s" % url)
     if not no_open:
