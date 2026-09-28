@@ -3,8 +3,8 @@
 A zero-dependency static screenshot inspector. It is **collection-agnostic**:
 every label, ordering, and file path it displays comes from `catalog.js`, so
 the same viewer can present any set of named screenshot captures without
-touching the app code. The catalog currently shipped here contains 89 desktop
-captures of the 15 Western Tally prototype directions (ports 5000–5014).
+touching the app code. The catalog currently shipped here contains 155 desktop
+captures of the 26 Western Tally prototype directions (ports 5000–5025).
 
 ## Features
 
@@ -17,15 +17,22 @@ captures of the 15 Western Tally prototype directions (ports 5000–5014).
   available theme while the preference is kept.
 - Viewport switching driven by the catalog's `viewports` list; a viewport is
   enabled only when the selected prototype actually has captures for it.
-- Fit vs. 100% zoom; a light sunken canvas with a subtle checker; one
-  `<img>` element only.
+- Fit vs. 100% zoom; a light sunken canvas with a subtle checker; one image
+  in Single mode, one per pane in Compare mode.
+- Compare mode (`View: Single · Compare`): shows an independent right pane (B)
+  next to the primary pane (A), each with its own XP titlebar and caption
+  linking to the original. Page/theme/viewport/zoom are shared preferences —
+  a pane that lacks the requested variant falls back independently and the
+  notice says which pane fell back. Compare is deep-linked via `view` and
+  `right`.
 - Cinema mode (`Dim`, the default): dims and desaturates the viewer chrome
   and darkens the workspace while the screenshot itself is never touched;
   hovering or keyboard-focusing a chrome section restores it. `Bright`
   returns the full XP light UI.
-- Deep-linkable state (`?prototype=&viewport=&page=&theme=&zoom=&ui=`) plus
-  `localStorage` restore; `Open original` always points at the displayed
-  capture.
+- Deep-linkable state
+  (`?prototype=&right=&view=&viewport=&page=&theme=&zoom=&ui=`) plus
+  `localStorage` restore; `Open original` targets pane A in Compare, and each
+  pane caption links to that pane's own original.
 - Accessible: labelled controls, `aria-pressed` segmented buttons, disabled
   states, visible focus, `aria-live` status, `prefers-reduced-motion` support.
 - Responsive below 820 px — the viewer itself works on a phone regardless of
@@ -38,7 +45,7 @@ captures of the 15 Western Tally prototype directions (ports 5000–5014).
 
 ```
 prototype-library/
-├── index.html        markup: sticky chrome header + control deck, meta strip, canvas, footer
+├── index.html        markup: static chrome header + control deck, meta strip, canvas, footer
 ├── styles.css        XP-style chrome tokens + styling, responsive, reduced-motion
 ├── catalog.js        window.PROTOTYPE_LIBRARY — the entire configuration
 ├── app.js            classic-script viewer logic (state, rendering, keys, prefetch)
@@ -73,16 +80,21 @@ gracefully.
 
 | Control / key                    | Action                                       |
 | -------------------------------- | -------------------------------------------- |
-| `‹ Prev` / `Next ›`              | previous / next prototype (wraps around)     |
-| prototype select                 | jump to any prototype                        |
+| `‹ Prev` / `Next ›`              | previous / next prototype (pane A, wraps)    |
+| prototype select                 | jump to any prototype (pane A)               |
+| B select (Compare mode)          | choose the right pane's prototype            |
+| View: Single · Compare           | one pane vs. side-by-side panes              |
 | Viewport segmented control       | switch viewport (enabled only per-catalog)   |
 | Page segmented control           | switch page (unavailable pages disabled)     |
 | Theme segmented control          | set preferred theme                          |
 | Zoom: Fit · 100%                 | fit-to-width vs. natural size                |
 | UI: Dim · Bright                 | cinema mode vs. full XP chrome               |
-| `Open original`                  | open the displayed PNG in a new tab          |
-| `↑` / `↓`                        | previous / next prototype                    |
-| `←` / `→`                        | previous / next available page               |
+| `Open original`                  | open pane A's resolved PNG in a new tab      |
+| `↑` / `↓`                        | previous / next prototype (pane A)           |
+| `[` / `]`                        | pane B prototype (Compare mode only)         |
+| `Shift`+`↑` / `Shift`+`↓`        | pane B prototype (Compare mode only)         |
+| `V`                              | toggle Single / Compare                      |
+| `←` / `→`                        | previous / next available page (shared)      |
 | `T`                              | cycle preferred theme                        |
 | `Z`                              | toggle Fit / 100%                            |
 | `C`                              | toggle cinema mode (Dim / Bright)            |
@@ -122,6 +134,9 @@ window.PROTOTYPE_LIBRARY = {
 - **Adding a page, theme, or viewport** to the config arrays automatically
   creates its segmented-control button and enables it wherever matching
   captures exist — no edits to `index.html` or `app.js`.
+- Viewer state also carries `view` (`single`/`compare`) and `right` (the
+  compare pane's prototype id, defaulting to the second catalog entry), both
+  persisted in the URL and `localStorage` like the rest of the state.
 - A viewport button is enabled only when the selected prototype has a
   `captures.<viewport>` block. The shipped catalog has no `mobile` captures,
   so Mobile is disabled everywhere; adding `captures.mobile` entries turns it
@@ -136,7 +151,7 @@ window.PROTOTYPE_LIBRARY = {
 
 ## Current catalog
 
-Fifteen prototypes, p00–p14:
+Twenty-six prototypes, p00–p25:
 
 | ID  | #  | Label                     | Direction                | Source             |
 | --- | -- | ------------------------- | ------------------------ | ------------------ |
@@ -155,6 +170,17 @@ Fifteen prototypes, p00–p14:
 | p12 | 12 | Southern Poverty Law Center | The Campaign Report    | splcenter.org      |
 | p13 | 13 | T3 Chat                   | The App Shell            | t3.chat            |
 | p14 | 14 | Yusuke Sugomori           | The Instrument           | yusugomori.com     |
+| p15 | 15 | Prototype 15              | The Bulletin             | original direction |
+| p16 | 16 | Europa.eu                 | The Public Register      | europa.eu          |
+| p17 | 17 | The New Yorker            | The Feature              | newyorker.com      |
+| p18 | 18 | USA.gov                   | Civic Service            | usa.gov            |
+| p19 | 19 | Waymo                     | The Safety Record        | waymo.com          |
+| p20 | 20 | Track AIPAC               | The Tracker              | trackaipac.com     |
+| p21 | 21 | Tabnine                   | The Record, in the Open  | tabnine.com        |
+| p22 | 22 | Stripe Press              | The Imprint              | stripe.press       |
+| p23 | 23 | pbanks                    | The Plain-Text Ledger    | pbanks.net         |
+| p24 | 24 | Shopify Dev               | The Record, Documented   | shopify.dev        |
+| p25 | 25 | Mapping Police Violence   | The Count, in Sentences  | mappingpoliceviolence.org |
 
 ## Capture ordering assumptions
 
@@ -175,7 +201,12 @@ Within each port the sorted captures were assigned this sequence:
 
 Notable consequence: for p14 the second-oldest capture is an `events` URL —
 it is still `home-dark`, because timestamp position, not the URL word, is
-authoritative.
+authoritative. The same applies to p15's second capture (`events` URL,
+still `home-dark` by timestamp).
+
+The 5015–5025 batch (p15–p25) follows the same six-capture sequence —
+`home-light, home-dark, map-light, map-dark, entry-light, entry-dark` —
+assigned strictly by timestamp order; URL path words never override it.
 
 ## Filename grammar
 
@@ -197,7 +228,12 @@ Examples: `p02-terminal-desktop-01-home-light.png`,
 All renames were done with `git mv`; no image data was modified, deleted, or
 recompressed.
 
-## Renaming manifest (89 files)
+## Renaming manifest (155 files)
+
+The original screencapture filenames for the 5015–5025 batch are reconstructed
+from each PNG's preserved modification timestamp; the optional URL-path segment
+in those original names is not recoverable, so those rows show the root form
+`screencapture-127-0-0-1-PORT-YYYY-MM-DD-HH_MM_SS.png`.
 
 | Original filename | New filename |
 | ----------------- | ------------ |
@@ -290,6 +326,72 @@ recompressed.
 | screencapture-127-0-0-1-5014-events-2026-09-23-21_00_33.png | screenshots/p14-yusugomori-com-desktop-02-map-dark.png |
 | screencapture-127-0-0-1-5014-add-2026-09-23-21_00_40.png | screenshots/p14-yusugomori-com-desktop-03-entry-light.png |
 | screencapture-127-0-0-1-5014-add-2026-09-23-21_00_45.png | screenshots/p14-yusugomori-com-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5015-2026-09-28-20_41_17.png | screenshots/p15-bulletin-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5015-events-2026-09-28-20_41_53.png | screenshots/p15-bulletin-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5015-2026-09-28-20_42_01.png | screenshots/p15-bulletin-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5015-2026-09-28-20_42_05.png | screenshots/p15-bulletin-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5015-2026-09-28-20_42_12.png | screenshots/p15-bulletin-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5015-2026-09-28-20_42_16.png | screenshots/p15-bulletin-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_42_42.png | screenshots/p16-europa-eu-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_42_50.png | screenshots/p16-europa-eu-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_43_22.png | screenshots/p16-europa-eu-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_43_28.png | screenshots/p16-europa-eu-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_43_36.png | screenshots/p16-europa-eu-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5016-2026-09-28-20_43_41.png | screenshots/p16-europa-eu-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_43_56.png | screenshots/p17-newyorker-com-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_44_04.png | screenshots/p17-newyorker-com-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_44_19.png | screenshots/p17-newyorker-com-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_44_27.png | screenshots/p17-newyorker-com-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_44_35.png | screenshots/p17-newyorker-com-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5017-2026-09-28-20_44_40.png | screenshots/p17-newyorker-com-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_44_51.png | screenshots/p18-usa-gov-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_44_59.png | screenshots/p18-usa-gov-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_45_07.png | screenshots/p18-usa-gov-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_45_13.png | screenshots/p18-usa-gov-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_45_34.png | screenshots/p18-usa-gov-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5018-2026-09-28-20_45_40.png | screenshots/p18-usa-gov-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_45_54.png | screenshots/p19-waymo-com-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_46_01.png | screenshots/p19-waymo-com-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_46_21.png | screenshots/p19-waymo-com-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_46_26.png | screenshots/p19-waymo-com-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_46_35.png | screenshots/p19-waymo-com-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5019-2026-09-28-20_46_39.png | screenshots/p19-waymo-com-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_00.png | screenshots/p20-trackaipac-com-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_07.png | screenshots/p20-trackaipac-com-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_21.png | screenshots/p20-trackaipac-com-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_25.png | screenshots/p20-trackaipac-com-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_31.png | screenshots/p20-trackaipac-com-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5020-2026-09-28-20_47_34.png | screenshots/p20-trackaipac-com-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_47_44.png | screenshots/p21-tabnine-com-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_47_51.png | screenshots/p21-tabnine-com-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_47_58.png | screenshots/p21-tabnine-com-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_48_01.png | screenshots/p21-tabnine-com-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_48_08.png | screenshots/p21-tabnine-com-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5021-2026-09-28-20_48_11.png | screenshots/p21-tabnine-com-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_49_42.png | screenshots/p22-stripe-press-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_49_54.png | screenshots/p22-stripe-press-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_50_26.png | screenshots/p22-stripe-press-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_50_31.png | screenshots/p22-stripe-press-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_50_45.png | screenshots/p22-stripe-press-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5022-2026-09-28-20_50_49.png | screenshots/p22-stripe-press-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_51_48.png | screenshots/p23-pbanks-net-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_51_52.png | screenshots/p23-pbanks-net-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_52_26.png | screenshots/p23-pbanks-net-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_52_29.png | screenshots/p23-pbanks-net-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_52_36.png | screenshots/p23-pbanks-net-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5023-2026-09-28-20_52_39.png | screenshots/p23-pbanks-net-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_05.png | screenshots/p24-shopify-dev-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_12.png | screenshots/p24-shopify-dev-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_24.png | screenshots/p24-shopify-dev-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_30.png | screenshots/p24-shopify-dev-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_36.png | screenshots/p24-shopify-dev-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5024-2026-09-28-20_53_40.png | screenshots/p24-shopify-dev-desktop-03-entry-dark.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_53_54.png | screenshots/p25-mappingpolice-org-desktop-01-home-light.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_54_07.png | screenshots/p25-mappingpolice-org-desktop-01-home-dark.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_54_24.png | screenshots/p25-mappingpolice-org-desktop-02-map-light.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_54_31.png | screenshots/p25-mappingpolice-org-desktop-02-map-dark.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_55_01.png | screenshots/p25-mappingpolice-org-desktop-03-entry-light.png |
+| screencapture-127-0-0-1-5025-2026-09-28-20_55_05.png | screenshots/p25-mappingpolice-org-desktop-03-entry-dark.png |
 
 ## Adding a new capture batch (repeatable workflow)
 
@@ -312,33 +414,46 @@ For a future desktop or mobile batch:
 6. **Verify** every catalog path exists on disk and counts match the capture
    log (see checklist below).
 7. **Spot-check** in the browser: the first and last prototype, plus every
-   exception (today: p07's full map, p08's light-only set).
+   exception (today: p07's full map, p08's light-only set) and the newest
+   batch boundary (p15 first capture, p25 last capture). Also open Compare
+   and confirm both panes render.
 
 ## Implementation notes
 
-- **State & persistence:** state is `{ prototype, viewport, page, theme,
-  zoom, ui }`. Query params
-  (`?prototype=&viewport=&page=&theme=&zoom=&ui=`) win,
+- **State & persistence:** state is `{ prototype, right, view, viewport,
+  page, theme, zoom, ui }`. Query params
+  (`?prototype=&right=&view=&viewport=&page=&theme=&zoom=&ui=`) win,
   then `localStorage`, then catalog defaults. Every change writes back via
   `history.replaceState` and `localStorage`, both wrapped in try/catch for
   `file://` and locked-down browsers. Zoom values are `fit` and `full`
-  (`full` = the `100%` button); `ui` values are `dim` and `bright`.
+  (`full` = the `100%` button); `ui` values are `dim` and `bright`; `view`
+  values are `single` and `compare`.
+- **Shared preferences & compare:** `state.theme`, `state.page`, and
+  `state.viewport` are preferences shared by both panes. Each pane resolves
+  them independently — a pane that lacks the preference falls back and the
+  notice identifies it, e.g. `A · Compact Magazine: Dark unavailable —
+  showing Light.` A shared control stays enabled when at least one pane can
+  honor it, and in compare the pressed segmented button always reflects the
+  stored preference rather than one pane's fallback.
 - **Theme preference:** `state.theme` is the user's preference, not the
   displayed variant. The resolver falls back to the first configured theme
-  present on the capture, shows "<Theme> unavailable — showing the <theme>
-  capture", and keeps the preference so the next prototype resumes it.
+  present on the capture and keeps the preference so the next prototype
+  resumes it.
 - **Image dimensions:** the metadata strip reads `img.naturalWidth ×
   img.naturalHeight` after each `load` event — nothing is hardcoded.
-- **Prefetch & cache:** during idle time two `<link rel="prefetch"
-  as="image">` elements are pointed at the same normalized selection on the
-  previous and next prototypes. `serve.py` sends `Cache-Control: public,
+- **Prefetch & cache:** during idle time `<link rel="prefetch" as="image">`
+  elements are pointed at the normalized selection on pane A's previous and
+  next prototypes, plus pane B's current resolved capture in compare mode.
+  `serve.py` sends `Cache-Control: public,
   max-age=31536000, immutable` for `/screenshots/` and `no-cache` for
   everything else, so renamed images are cached forever while code always
   revalidates.
-- **Rendering:** exactly one `<img decoding="async">`; Fit applies
-  `width: min(100%, 1440px); height: auto`, 100% uses natural width inside a
-  horizontally scrolling canvas. The image is never cropped; a thin border
-  and neutral shadow keep its boundary distinct from the viewer.
+- **Rendering:** one `<img decoding="async">` per pane — pane A always, pane
+  B in compare mode. Fit applies `width: min(100%, 1440px); height: auto`,
+  100% uses natural width inside each pane's own horizontal scroller. Each
+  pane reports loading/errors independently so a missing file never hides
+  the other pane. The image is never cropped; a thin border and neutral
+  shadow keep its boundary distinct from the viewer.
 - **Cinema mode:** `ui: "dim"` adds `body.viewer-dim`, which darkens the
   page/canvas and applies `opacity`/`filter` only to `.topbar`,
   `.meta-strip`, `.notice`, and `.foot`. Each dimmed section returns to full
@@ -354,12 +469,12 @@ For a future desktop or mobile batch:
 ## Verification checklist
 
 ```bat
-:: 89 PNGs under screenshots/, none left in root
+:: 155 PNGs under screenshots/, none left in root
 dir /b screenshots\*.png | find /c /v ""
 dir /b *.png
 
 :: catalog integrity: every referenced path exists, counts match
-py -c "import re,os;src=open('catalog.js',encoding='utf-8').read();ps=re.findall(r'\"(screenshots/[^\"]+)\"',src);assert all(os.path.exists(p) for p in ps);assert len(ps)==89;print('catalog ok:',len(ps),'refs')"
+py -c "import re,os;src=open('catalog.js',encoding='utf-8').read();ps=re.findall(r'\"(screenshots/[^\"]+)\"',src);assert all(os.path.exists(p) for p in ps);assert len(ps)==155;print('catalog ok:',len(ps),'refs')"
 
 :: server compiles and serves
 py -m py_compile serve.py
@@ -375,5 +490,8 @@ Then in the browser at `http://127.0.0.1:4173/`:
 - [ ] 100% zoom shows natural width with horizontal scroll; Fit restores
 - [ ] `↑`/`↓`/`←`/`→`, `T`, `Z`, `C`, `O` shortcuts work outside form fields
 - [ ] Default UI mode is Dim; hovering/focusing chrome restores it; `C` and the UI control switch to Bright
-- [ ] ~390 px viewport: header controls wrap, viewer stays usable
+- [ ] `V` / Compare shows two titled panes; A and B selects are independent; `[`/`]` and `Shift`+`↑`/`↓` move B
+- [ ] Compare fallback: A=p08 + B=p00 with dark preferred — A shows light, B shows dark, notice names pane A
+- [ ] `view=compare&right=…` deep-links; reload restores both panes
+- [ ] ~390 px viewport: panes stack, header controls wrap, viewer stays usable
 - [ ] No console errors; second visit restores the last selection

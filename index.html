@@ -17,13 +17,18 @@
   <div class="controls" role="toolbar" aria-label="Viewer controls">
     <div class="ctl-group proto-nav">
       <button id="prevProto" class="btn" type="button" aria-label="Previous prototype">&lsaquo; Prev</button>
-      <select id="protoSelect" aria-label="Prototype"></select>
+      <span id="protoLabelA" class="pane-key" hidden>A</span>
+      <select id="protoSelect" aria-label="Left pane prototype"></select>
       <button id="nextProto" class="btn" type="button" aria-label="Next prototype">Next &rsaquo;</button>
+      <span id="compareSelector" class="compare-selector" hidden>
+        <span class="pane-key">B</span>
+        <select id="protoSelectB" aria-label="Right pane prototype"></select>
+      </span>
     </div>
 
     <div class="ctl-group">
-      <span class="ctl-label" id="viewportLabel">Viewport</span>
-      <div class="segmented" id="viewportSeg" role="group" aria-labelledby="viewportLabel"></div>
+      <span class="ctl-label" id="viewLabel">View</span>
+      <div class="segmented" id="viewSeg" role="group" aria-labelledby="viewLabel"></div>
     </div>
 
     <div class="ctl-group">
@@ -34,6 +39,11 @@
     <div class="ctl-group">
       <span class="ctl-label" id="themeLabel">Theme</span>
       <div class="segmented" id="themeSeg" role="group" aria-labelledby="themeLabel"></div>
+    </div>
+
+    <div class="ctl-group">
+      <span class="ctl-label" id="viewportLabel">Viewport</span>
+      <div class="segmented" id="viewportSeg" role="group" aria-labelledby="viewportLabel"></div>
     </div>
 
     <div class="ctl-group">
@@ -65,14 +75,35 @@
   <section class="canvas" id="canvas" aria-label="Screenshot canvas">
     <div class="canvas-inner">
       <span id="stateMsg" class="state-msg" hidden></span>
-      <img id="shot" decoding="async" alt="">
+      <article class="pane" id="paneA">
+        <div class="pane-titlebar">
+          <span class="pane-key">A</span>
+          <a class="pane-caption" id="captionA" href="#" target="_blank" rel="noopener"></a>
+        </div>
+        <div class="pane-viewport">
+          <span id="paneMsgA" class="state-msg pane-msg" hidden></span>
+          <img id="shot" decoding="async" alt="">
+        </div>
+      </article>
+      <article class="pane" id="paneB" hidden>
+        <div class="pane-titlebar">
+          <span class="pane-key">B</span>
+          <a class="pane-caption" id="captionB" href="#" target="_blank" rel="noopener"></a>
+        </div>
+        <div class="pane-viewport">
+          <span id="paneMsgB" class="state-msg pane-msg" hidden></span>
+          <img id="shotB" decoding="async" alt="">
+        </div>
+      </article>
     </div>
   </section>
 </main>
 
 <footer class="foot">
   <span class="foot-title">Shortcuts</span>
-  <span><kbd>&uarr;</kbd>/<kbd>&darr;</kbd> previous / next prototype</span>
+  <span><kbd>&uarr;</kbd>/<kbd>&darr;</kbd> pane A prototype</span>
+  <span id="rightKeys"><kbd>[</kbd>/<kbd>]</kbd> pane B prototype</span>
+  <span><kbd>V</kbd> compare</span>
   <span><kbd>&larr;</kbd>/<kbd>&rarr;</kbd> previous / next page</span>
   <span><kbd>T</kbd> theme</span>
   <span><kbd>Z</kbd> zoom</span>
