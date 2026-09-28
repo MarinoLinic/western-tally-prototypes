@@ -239,6 +239,160 @@ window.PROTOTYPE_LIBRARY = {
           entry: { light: "screenshots/p14-yusugomori-com-desktop-03-entry-light.png", dark: "screenshots/p14-yusugomori-com-desktop-03-entry-dark.png" }
         }
       }
+    },
+    {
+      id: "p15",
+      number: 15,
+      label: "Prototype 15",
+      direction: "The Bulletin",
+      source: "original direction",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p15-bulletin-desktop-01-home-light.png", dark: "screenshots/p15-bulletin-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p15-bulletin-desktop-02-map-light.png", dark: "screenshots/p15-bulletin-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p15-bulletin-desktop-03-entry-light.png", dark: "screenshots/p15-bulletin-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p16",
+      number: 16,
+      label: "Europa.eu",
+      direction: "The Public Register",
+      source: "europa.eu",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p16-europa-eu-desktop-01-home-light.png", dark: "screenshots/p16-europa-eu-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p16-europa-eu-desktop-02-map-light.png", dark: "screenshots/p16-europa-eu-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p16-europa-eu-desktop-03-entry-light.png", dark: "screenshots/p16-europa-eu-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p17",
+      number: 17,
+      label: "The New Yorker",
+      direction: "The Feature",
+      source: "newyorker.com",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p17-newyorker-com-desktop-01-home-light.png", dark: "screenshots/p17-newyorker-com-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p17-newyorker-com-desktop-02-map-light.png", dark: "screenshots/p17-newyorker-com-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p17-newyorker-com-desktop-03-entry-light.png", dark: "screenshots/p17-newyorker-com-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p18",
+      number: 18,
+      label: "USA.gov",
+      direction: "Civic Service",
+      source: "usa.gov",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p18-usa-gov-desktop-01-home-light.png", dark: "screenshots/p18-usa-gov-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p18-usa-gov-desktop-02-map-light.png", dark: "screenshots/p18-usa-gov-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p18-usa-gov-desktop-03-entry-light.png", dark: "screenshots/p18-usa-gov-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p19",
+      number: 19,
+      label: "Waymo",
+      direction: "The Safety Record",
+      source: "waymo.com",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p19-waymo-com-desktop-01-home-light.png", dark: "screenshots/p19-waymo-com-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p19-waymo-com-desktop-02-map-light.png", dark: "screenshots/p19-waymo-com-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p19-waymo-com-desktop-03-entry-light.png", dark: "screenshots/p19-waymo-com-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p20",
+      number: 20,
+      label: "Track AIPAC",
+      direction: "The Tracker",
+      source: "trackaipac.com",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p20-trackaipac-com-desktop-01-home-light.png", dark: "screenshots/p20-trackaipac-com-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p20-trackaipac-com-desktop-02-map-light.png", dark: "screenshots/p20-trackaipac-com-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p20-trackaipac-com-desktop-03-entry-light.png", dark: "screenshots/p20-trackaipac-com-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p21",
+      number: 21,
+      label: "Tabnine",
+      direction: "The Record, in the Open",
+      source: "tabnine.com",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p21-tabnine-com-desktop-01-home-light.png", dark: "screenshots/p21-tabnine-com-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p21-tabnine-com-desktop-02-map-light.png", dark: "screenshots/p21-tabnine-com-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p21-tabnine-com-desktop-03-entry-light.png", dark: "screenshots/p21-tabnine-com-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p22",
+      number: 22,
+      label: "Stripe Press",
+      direction: "The Imprint",
+      source: "stripe.press",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p22-stripe-press-desktop-01-home-light.png", dark: "screenshots/p22-stripe-press-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p22-stripe-press-desktop-02-map-light.png", dark: "screenshots/p22-stripe-press-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p22-stripe-press-desktop-03-entry-light.png", dark: "screenshots/p22-stripe-press-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p23",
+      number: 23,
+      label: "pbanks",
+      direction: "The Plain-Text Ledger",
+      source: "pbanks.net",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p23-pbanks-net-desktop-01-home-light.png", dark: "screenshots/p23-pbanks-net-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p23-pbanks-net-desktop-02-map-light.png", dark: "screenshots/p23-pbanks-net-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p23-pbanks-net-desktop-03-entry-light.png", dark: "screenshots/p23-pbanks-net-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p24",
+      number: 24,
+      label: "Shopify Dev",
+      direction: "The Record, Documented",
+      source: "shopify.dev",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p24-shopify-dev-desktop-01-home-light.png", dark: "screenshots/p24-shopify-dev-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p24-shopify-dev-desktop-02-map-light.png", dark: "screenshots/p24-shopify-dev-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p24-shopify-dev-desktop-03-entry-light.png", dark: "screenshots/p24-shopify-dev-desktop-03-entry-dark.png" }
+        }
+      }
+    },
+    {
+      id: "p25",
+      number: 25,
+      label: "Mapping Police Violence",
+      direction: "The Count, in Sentences",
+      source: "mappingpoliceviolence.org",
+      captures: {
+        desktop: {
+          home: { light: "screenshots/p25-mappingpolice-org-desktop-01-home-light.png", dark: "screenshots/p25-mappingpolice-org-desktop-01-home-dark.png" },
+          map: { light: "screenshots/p25-mappingpolice-org-desktop-02-map-light.png", dark: "screenshots/p25-mappingpolice-org-desktop-02-map-dark.png" },
+          entry: { light: "screenshots/p25-mappingpolice-org-desktop-03-entry-light.png", dark: "screenshots/p25-mappingpolice-org-desktop-03-entry-dark.png" }
+        }
+      }
     }
   ]
 };
