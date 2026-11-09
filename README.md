@@ -6,6 +6,10 @@ the same viewer can present any set of named screenshot captures without
 touching the app code. The catalog currently shipped here contains 155 desktop
 captures of the 26 Western Tally prototype directions (ports 5000–5025).
 
+![Screenshot inspector](docs/screenshots/inspector.png)
+
+![Compare two prototypes](docs/screenshots/comparison.png)
+
 ## Features
 
 - Browse prototypes with previous / next buttons, a native `<select>`, or
